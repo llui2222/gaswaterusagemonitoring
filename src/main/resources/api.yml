@@ -1,0 +1,90 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Swagger GasWaterUsageMonitoring
+paths:
+  /v1/users:
+    post:
+      summary: add user data
+      requestBody:
+        description: user data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      operationId: addUserData
+      tags:
+        - users
+      responses:
+        '201':
+          description: Null response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v1/users/{userId}:
+    get:
+      summary: Info for a specific user
+      operationId: exposeUserConsumptionByUserId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The id of the user to retrieve his history
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: A paged array of user
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+          format: int64
+        gas:
+          type: integer
+          format: int64
+        coldwater:
+          type: integer
+          format: int64
+        hotwater:
+          type: integer
+          format: int64
+    Users:
+      type: array
+      items:
+        $ref: "#/components/schemas/User"
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
